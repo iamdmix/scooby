@@ -1,0 +1,12 @@
+- resources:
+    cpu: true
+    memory: true
+    label: System
+- datetime:
+    format:
+      timeStyle: short
+      dateStyle: medium
+      hourCycle: h23
+- search:
+    provider: google
+    focus: true

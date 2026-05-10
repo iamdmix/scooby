@@ -1,0 +1,11 @@
+title: Sentinel @ Scooby
+theme: dark
+color: slate
+cardBlur: sm
+layout:
+  Infrastructure:
+    style: table
+    columns: 2
+  Services:
+    style: cards
+    columns: 3

@@ -1,145 +1,114 @@
-# Reusable log rotation — prevents containers from filling disk
-x-logging: &default-logging
-  driver: json-file
-  options:
-    max-size: "10m"
-    max-file: "3"
-
 networks:
-  default:
-    driver: bridge
-  monitoring:
+  home_server:
+    name: home_server
     driver: bridge
 
-# Named volumes — Docker Desktop uses virtiofs for these, much faster than bind mounts on macOS
 volumes:
   jellyfin_config:
   jellyfin_cache:
-  portainer_data:
   uptimekuma_data:
-  prometheus_data:
-  grafana_data:
+  portainer_data:
+  n8n_data:
+  pihole_config:
+  dnsmasq_config:
+
+x-common-keys: &common-keys
+  restart: unless-stopped
+  networks:
+    - home_server
 
 services:
-  # 1. Media Server (Jellyfin)
-  jellyfin:
-    image: jellyfin/jellyfin:latest
-    container_name: jellyfin
-    ports:
-      - "8096:8096"
-      - "8920:8920"
-      - "7359:7359/udp"
-      - "1900:1900/udp"
-    volumes:
-      - jellyfin_config:/config
-      - jellyfin_cache:/cache
-      - ~/Media:/media:ro
-    environment:
-      - JELLYFIN_PublishedServerUrl=http://localhost:8096
-    restart: unless-stopped
-    logging: *default-logging
-    networks:
-      - default
-
-  # 2. Portfolio Website
-  portfolio_web:
-    image: nginx:stable-alpine
-    container_name: portfolio_web
-    ports:
-      - "8081:80"
-    volumes:
-      - ./portfolio/html:/usr/share/nginx/html:ro
-    restart: unless-stopped
-    logging: *default-logging
-    networks:
-      - default
-
-  # 3. Docker Management (Portainer)
+  # --- INFRASTRUCTURE ---
   portainer:
-    image: portainer/portainer-ce:latest
+    <<: *common-keys
+    image: portainer/portainer-ce:lts
     container_name: portainer
+    security_opt:
+      - no-new-privileges:true
     ports:
-      - "9000:9000"
+      - "9443:9443"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-    restart: unless-stopped
-    logging: *default-logging
-    networks:
-      - default
 
-  # 4. Uptime Monitoring (Uptime Kuma)
+  pihole:
+    <<: *common-keys
+    image: pihole/pihole:latest
+    container_name: pihole
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8080:80/tcp"
+    environment:
+      TZ: 'Asia/Kolkata'
+      WEBPASSWORD: 'your_secure_password'
+      FTLCONF_LOCAL_IPV4: '127.0.0.1'
+    volumes:
+      - pihole_config:/etc/pihole
+      - dnsmasq_config:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+
+  # --- MONITORING & DASHBOARD ---
   uptime-kuma:
+    <<: *common-keys
     image: louislam/uptime-kuma:1
     container_name: uptime-kuma
     ports:
       - "3001:3001"
     volumes:
       - uptimekuma_data:/app/data
-    restart: unless-stopped
-    logging: *default-logging
-    networks:
-      - default
 
-  # 5. Metrics Collection (Prometheus/Grafana)
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: node-exporter
-    command:
-      - '--path.rootfs=/host'
-    pid: host
-    volumes:
-      - /:/host:ro,rslave
-    restart: unless-stopped
-    logging: *default-logging
-    networks:
-      - monitoring
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    container_name: cadvisor
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker:/var/lib/docker:ro
+  homepage:
+    <<: *common-keys
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
     ports:
-      - "8082:8080"
-    restart: unless-stopped
-    logging: *default-logging
-    networks:
-      - monitoring
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
+      - "3000:3000"
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=*
     volumes:
-      - ./prometheus_config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=15d'
-    depends_on:
-      - node-exporter
-      - cadvisor
-    restart: unless-stopped
-    logging: *default-logging
-    networks:
-      - monitoring
+      - ./config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
+  # --- MEDIA & CONTENT ---
+  jellyfin:
+    <<: *common-keys
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
     ports:
-      - "3002:3000"
+      - "8096:8096"
     volumes:
-      - grafana_data:/var/lib/grafana
-    depends_on:
-      - prometheus
-    restart: unless-stopped
-    logging: *default-logging
-    networks:
-      - monitoring
+      - jellyfin_config:/config
+      - jellyfin_cache:/cache
+      - ${HOME}/Media:/media:ro
+    environment:
+      - JELLYFIN_PublishedServerUrl=${SERVER_URL:-http://localhost:8096}
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+
+  portfolio_web:
+    <<: *common-keys
+    image: nginx:stable-alpine
+    container_name: portfolio_web
+    ports:
+      - "8081:80"
+    volumes:
+      - ./portfolio/html:/usr/share/nginx/html:ro
+
+  # --- AUTOMATION ---
+  n8n:
+    <<: *common-keys
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=${SERVER_URL:-localhost}
+      - NODE_ENV=production
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      - n8n_data:/home/node/.n8n
