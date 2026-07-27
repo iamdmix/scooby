@@ -1,21 +1,6 @@
-networks:
-  home_server:
-    name: home_server
-    driver: bridge
-
-volumes:
-  jellyfin_config:
-  jellyfin_cache:
-  uptimekuma_data:
-  portainer_data:
-  n8n_data:
-  pihole_config:
-  dnsmasq_config:
-
+# ~/server/docker-compose.yml
 x-common-keys: &common-keys
   restart: unless-stopped
-  networks:
-    - home_server
 
 services:
   # --- INFRASTRUCTURE ---
@@ -92,12 +77,10 @@ services:
 
   portfolio_web:
     <<: *common-keys
-    image: nginx:stable-alpine
+    build: ./portfolio
     container_name: portfolio_web
     ports:
-      - "8081:80"
-    volumes:
-      - ./portfolio/html:/usr/share/nginx/html:ro
+      - "3002:3000"
 
   # --- AUTOMATION ---
   n8n:
@@ -112,3 +95,12 @@ services:
       - N8N_SECURE_COOKIE=false
     volumes:
       - n8n_data:/home/node/.n8n
+
+volumes:
+  portainer_data:
+  pihole_config:
+  dnsmasq_config:
+  uptimekuma_data:
+  jellyfin_config:
+  jellyfin_cache:
+  n8n_data:

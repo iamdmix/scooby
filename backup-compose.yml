@@ -1,0 +1,160 @@
+networks:
+  home_server:
+    name: home_server
+    driver: bridge
+
+volumes:
+  jellyfin_config:
+  jellyfin_cache:
+  uptimekuma_data:
+  portainer_data:
+  n8n_data:
+  pihole_config:
+  dnsmasq_config:
+
+x-common-keys: &common-keys
+  restart: unless-stopped
+  networks:
+    - home_server
+
+services:
+  traefik:
+    <<: *common-keys
+    image: traefik:v3.0
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+
+  # --- INFRASTRUCTURE ---
+  portainer:
+    <<: *common-keys
+    image: portainer/portainer-ce:lts
+    container_name: portainer
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "9443:9443"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.scooby`)"
+      - "traefik.http.routers.portainer.entrypoints=web"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+  pihole:
+    <<: *common-keys
+    image: pihole/pihole:latest
+    container_name: pihole
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8082:80/tcp"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.scooby`)"
+      - "traefik.http.routers.pihole.entrypoints=web"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+    environment:
+      TZ: 'Asia/Kolkata'
+      WEBPASSWORD: 'your_secure_password'
+      FTLCONF_LOCAL_IPV4: '127.0.0.1'
+    volumes:
+      - pihole_config:/etc/pihole
+      - dnsmasq_config:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+
+  # --- MONITORING & DASHBOARD ---
+  uptime-kuma:
+    <<: *common-keys
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptimekuma_data:/app/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime-kuma.scooby`)"
+      - "traefik.http.routers.uptime-kuma.entrypoints=web"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+
+  homepage:
+    <<: *common-keys
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports:
+      - "3000:3000"
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=*
+    volumes:
+      - ./config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homepage.rule=Host(`homepage.scooby`)"
+      - "traefik.http.routers.homepage.entrypoints=web"
+      - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+
+  # --- MEDIA & CONTENT ---
+  jellyfin:
+    <<: *common-keys
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    ports:
+      - "8096:8096"
+    volumes:
+      - jellyfin_config:/config
+      - jellyfin_cache:/cache
+      - ${HOME}/Media:/media:ro
+    environment:
+      - JELLYFIN_PublishedServerUrl=${SERVER_URL:-http://localhost:8096}
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.scooby`)"
+      - "traefik.http.routers.jellyfin.entrypoints=web"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+
+  portfolio_web:
+    <<: *common-keys
+    image: nginx:stable-alpine
+    container_name: portfolio_web
+    ports:
+      - "8081:80"
+    volumes:
+      - ./portfolio/html:/usr/share/nginx/html:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portfolio.rule=Host(`portfolio.scooby`)"
+      - "traefik.http.routers.portfolio.entrypoints=web"
+      - "traefik.http.services.portfolio.loadbalancer.server.port=80"
+
+  # --- AUTOMATION ---
+  n8n:
+    <<: *common-keys
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=${SERVER_URL:-localhost}
+      - NODE_ENV=production
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      - n8n_data:/home/node/.n8n
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.scooby`)"
+      - "traefik.http.routers.n8n.entrypoints=web"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"

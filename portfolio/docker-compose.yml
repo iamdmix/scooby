@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  portfolio:
+    build: .
+    container_name: portfolio
+    ports:
+      - "8081:3000"
+    volumes:
+      # Map the resume file so you can update it on the host filesystem without rebuilding the image
+      - ./public/resume.pdf:/app/public/resume.pdf
+    restart: always
