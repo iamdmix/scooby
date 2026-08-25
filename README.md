@@ -7,13 +7,13 @@ A self-hosted homeserver stack running on Docker, exposed via Cloudflare Tunnel.
 | Service | Port | Description |
 |---------|------|-------------|
 | [Jellyfin](http://localhost:8096) | 8096 | Media server |
-| Portfolio | 8081 | Personal website (nginx) |
-| [Portainer](http://localhost:9000) | 9000 | Docker management UI |
+| Portfolio | 3002 | Personal website (Next.js) |
+| [Portainer](http://localhost:9443) | 9443 | Docker management UI |
+| Pi-hole | 8080 | Network-wide ad blocking / DNS |
 | [Uptime Kuma](http://localhost:3001) | 3001 | Uptime monitoring |
-| [Prometheus](http://localhost:9090) | 9090 | Metrics collection |
-| [Grafana](http://localhost:3002) | 3002 | Metrics dashboards |
-| cAdvisor | 8082 | Container metrics |
-| Node Exporter | — | Host metrics |
+| Homepage | 3000 | Dashboard |
+| Actual Budget | — | Budgeting |
+| n8n | 5678 | Automation |
 
 ## Getting Started
 
@@ -36,8 +36,6 @@ The stack is exposed publicly via a Cloudflare Tunnel. Set `CLOUDFLARE_TUNNEL_ID
 
 ## Stack
 
-- Docker + Docker Compose
+- Docker + Docker Compose (OrbStack)
 - Cloudflare Tunnel (`cloudflared`)
-- Prometheus + Grafana for observability
-- Nginx for static portfolio hosting
-# sentinel
+- Homepage dashboard + Uptime Kuma for status
