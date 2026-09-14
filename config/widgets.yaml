@@ -1,6 +1,7 @@
 - resources:
     cpu: true
     memory: true
+    disk: /
     label: System
 - datetime:
     format:

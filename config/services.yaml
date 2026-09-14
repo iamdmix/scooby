@@ -1,34 +1,70 @@
 - Infrastructure:
-    - Pi-hole:
-        icon: pi-hole
-        href: http://scooby:8080/admin
-        description: Network Guardian
-        widget:
-          type: pihole
-          version: 6
-          url: http://pihole:80
-          key: 'YIDyzdyUoAghA9m0jcPMcgJD2qg12Qlu98MHlZg+VK4='
-    - Portainer:
-        icon: portainer
-        href: https://localhost:9443
-        description: Docker Management
+    - Node Health:
+        - Pi-hole:
+            icon: pi-hole
+            href: http://scooby:8082/admin
+            description: Network Guardian
+            widget:
+              type: pihole
+              version: 6
+              url: http://pihole:80
+              key: '{{HOMEPAGE_VAR_PIHOLE_KEY}}'
 
-- Services:
-    - Uptime Kuma:
-        icon: uptime-kuma
-        href: http://localhost:3001
-        widget:
-          type: uptimekuma
-          url: http://uptime-kuma:3001
-    - Jellyfin:
-        icon: jellyfin
-        href: http://localhost:8096
-        description: Media Server
-    - n8n:
-        icon: n8n
-        href: http://localhost:5678
-        description: Automations
-    - Portfolio:
-        icon: nginx
-        href: http://localhost:8081
-        description: Local Dev Site
+        - Portainer:
+            icon: portainer
+            href: https://scooby:9443
+            description: Docker Management
+            widget:
+              type: portainer
+              url: http://portainer:9000
+              env: 3
+              key: '{{HOMEPAGE_VAR_PORTAINER_API_KEY}}'
+              fields: ["running", "stopped", "total"]
+
+        - Docker:
+            icon: docker
+            description: Container Health
+            widget:
+              type: docker
+              server: my-docker
+              container: homepage
+
+- Media & Apps:
+    - Streaming:
+        - Jellyfin:
+            icon: jellyfin
+            href: http://scooby:8096
+            description: Media Server
+            widget:
+              type: jellyfin
+              url: http://jellyfin:8096
+              key: '{{HOMEPAGE_VAR_JELLYFIN_API_KEY}}'
+              enableNowPlaying: true
+
+    - Monitoring:
+        - Uptime Kuma:
+            icon: uptime-kuma
+            href: http://scooby:3001
+            description: Status Monitor
+            widget:
+              type: uptimekuma
+              url: http://uptime-kuma:3001
+
+        - Portfolio:
+            icon: nextjs
+            href: https://dharmikshinde.tech
+            description: Personal Site
+
+- Quick Links:
+    - GitHub:
+        icon: github
+        href: https://github.com/
+    - Reddit:
+        icon: reddit
+        href: https://reddit.com/
+    - YouTube:
+        icon: youtube
+        href: https://youtube.com/
+    - Gmail:
+        icon: gmail
+        href: https://mail.google.com/

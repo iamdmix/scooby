@@ -1,11 +1,39 @@
-title: Sentinel @ Scooby
+title: Scooby
+description: Durden Homeserver
 theme: dark
-color: slate
-cardBlur: sm
+color: neutral
+headerStyle: clean
+language: en
+cardBlur: md
+blurxl: md
+fivelovefour: false
+hideVersion: true
+statusStyle: dot
+background:
+  image: https://images.unsplash.com/photo-1496033388009-263252c537a6?auto=format&fit=crop&w=2560&q=80
+  opacity: 40
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: true
+  showSearchSuggestions: true
+  hideVisitURL: true
+  provider: google
+useEqualHeights: true
 layout:
   Infrastructure:
-    style: table
-    columns: 2
-  Services:
-    style: cards
-    columns: 3
+    icon: mdi-server-network
+    Node Health:
+      style: cards
+      columns: 2
+  Media & Apps:
+    icon: mdi-play-network
+    Streaming:
+      style: cards
+      columns: 2
+    Monitoring:
+      style: cards
+      columns: 2
+  Quick Links:
+    icon: mdi-link-box-variant-outline
+    style: row
+    columns: 4

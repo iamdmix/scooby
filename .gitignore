@@ -11,6 +11,13 @@ config.yml
 # Docker volumes / runtime data
 data/
 
+# Netscape cookie files (curl)
+*.cookie
+
+# Homepage auto-regenerates these stubs on every container start
+config/kubernetes.yaml
+config/proxmox.yaml
+
 # macOS
 .DS_Store
 .AppleDouble
