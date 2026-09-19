@@ -1,38 +1,56 @@
 title: Scooby
-description: Durden Homeserver
+description: Dharmik's Homeserver
 theme: dark
-color: neutral
+color: violet
 headerStyle: clean
 language: en
-cardBlur: md
+cardBlur: sm
 blurxl: md
-fivelovefour: false
 hideVersion: true
 statusStyle: dot
+favicon: https://emojicdn.elk.sh/🕸️?format=twitter
 background:
-  image: https://images.unsplash.com/photo-1496033388009-263252c537a6?auto=format&fit=crop&w=2560&q=80
-  opacity: 40
+  image: http://scooby:3300/background/bg.jpg
+  blur: sm
+  saturate: 90
+  brightness: 75
+  opacity: 100
 quicklaunch:
   searchDescriptions: true
-  hideInternetSearch: true
+  hideInternetSearch: false
   showSearchSuggestions: true
   hideVisitURL: true
   provider: google
 useEqualHeights: true
+colorway:
+  neutral: "#8b5cf6"
+customStyles: |
+  .MuiChip-root {
+    background: rgba(124, 58, 237, 0.12) !important;
+    border: 1px solid rgba(167, 139, 250, 0.35) !important;
+  }
+  #dashboard-services .MuiCard-root {
+    background: rgba(10, 8, 20, 0.72) !important;
+    border: 1px solid rgba(167, 139, 250, 0.18) !important;
+    box-shadow: 0 0 24px rgba(124, 58, 237, 0.07) !important;
+  }
+  #dashboard-widgets .MuiPaper-root {
+    background: rgba(10, 8, 20, 0.72) !important;
+    border: 1px solid rgba(167, 139, 250, 0.18) !important;
+  }
 layout:
   Infrastructure:
     icon: mdi-server-network
-    Node Health:
-      style: cards
-      columns: 2
-  Media & Apps:
+    style: row
+    columns: 4
+  Media:
     icon: mdi-play-network
-    Streaming:
-      style: cards
-      columns: 2
-    Monitoring:
-      style: cards
-      columns: 2
+    style: row
+    columns: 2
+  Projects:
+    icon: mdi-rocket-launch-outline
+    style: row
+    columns: 4
   Quick Links:
     icon: mdi-link-box-variant-outline
     style: row

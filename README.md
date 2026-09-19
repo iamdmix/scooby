@@ -11,6 +11,8 @@ A self-hosted homeserver on OrbStack, wrapped in a Homepage dashboard and expose
 | Pi-hole | 8080 / 53 | DNS + ad blocking |
 | Jellyfin | 8096 | Media server |
 | Kavita | 5001 | Library / reading server |
+| Dozzle | 8888 | Live container logs (all services) |
+| Beszel | 8889 | Server metrics hub (agent on 7222) |
 | Cloudflare Tunnel | — | External access via `config.yml` + `cloudflared` |
 
 Media is mounted read-only from `${HOME}/Media`. All state lives in Docker named volumes (`jellyfin_config`, `pihole_config`, `portainer_data`, `n8n_data`, `uptimekuma_data`, etc.).

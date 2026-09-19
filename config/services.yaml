@@ -1,56 +1,111 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/services
+
 - Infrastructure:
-    - Node Health:
-        - Pi-hole:
-            icon: pi-hole
-            href: http://scooby:8082/admin
-            description: Network Guardian
-            widget:
-              type: pihole
-              version: 6
-              url: http://pihole:80
-              key: '{{HOMEPAGE_VAR_PIHOLE_KEY}}'
+    - Pi-hole:
+        icon: pi-hole
+        href: http://scooby:8080/admin
+        description: DNS & Ad Blocking
+        widget:
+            type: pihole
+            version: 6
+            url: http://pihole:80
+            key: '{{HOMEPAGE_VAR_PIHOLE_KEY}}'
 
-        - Portainer:
-            icon: portainer
-            href: https://scooby:9443
-            description: Docker Management
-            widget:
-              type: portainer
-              url: http://portainer:9000
-              env: 3
-              key: '{{HOMEPAGE_VAR_PORTAINER_API_KEY}}'
-              fields: ["running", "stopped", "total"]
+    - Portainer:
+        icon: portainer
+        href: https://scooby:9443
+        description: Docker Management
+        widget:
+            type: portainer
+            url: http://portainer:9000
+            env: 3
+            key: '{{HOMEPAGE_VAR_PORTAINER_API_KEY}}'
+            fields: [running, stopped, total]
 
-        - Docker:
-            icon: docker
-            description: Container Health
-            widget:
-              type: docker
-              server: my-docker
-              container: homepage
+    - Dozzle:
+        icon: mdi-file-document-outline
+        href: http://scooby:8888
+        description: Live Container Logs
 
-- Media & Apps:
-    - Streaming:
-        - Jellyfin:
-            icon: jellyfin
-            href: http://scooby:8096
-            description: Media Server
-            widget:
-              type: jellyfin
-              url: http://jellyfin:8096
-              key: '{{HOMEPAGE_VAR_JELLYFIN_API_KEY}}'
-              enableNowPlaying: true
+    - Beszel:
+        icon: beszel
+        href: http://scooby:8889
+        description: System Metrics
+        widget:
+            type: beszel
+            url: http://beszel:8090
+            username: hermes-test@scooby.local
+            password: Test1234!xyz
+            systemId: 6gv36x9tjcyn3sp
+            version: 2
+            fields: [cpu, memory, disk, network]
 
-    - Monitoring:
-        - Portfolio:
-            icon: nextjs
-            href: https://dharmikshinde.tech
-            description: Personal Site
+- Media:
+    - Jellyfin:
+        icon: jellyfin
+        href: http://scooby:8096
+        description: Media Server
+        widget:
+            type: jellyfin
+            url: http://jellyfin:8096
+            key: '{{HOMEPAGE_VAR_JELLYFIN_API_KEY}}'
+            enableNowPlaying: true
+
+    - Kavita:
+        icon: kavita
+        href: http://scooby:5001
+        description: Book Server
+
+- Projects:
+    - AI Agents:
+        - Hermes:
+            icon: mdi-robot-excited
+            href: https://t.me/
+            description: Telegram AI agent
+            siteMonitor: http://192.168.68.103:3300/background/bg.jpg
+        - OpenCode:
+            icon: mdi-code-braces
+            href: http://scooby:4096
+            description: AI coding sessions
+            siteMonitor: http://192.168.68.103:4096/session
+            widget:
+                type: customapi
+                url: http://192.168.68.103:4096/session
+                refreshInterval: 15000
+                mappings:
+                    - label: Sessions
+                      format: size
+                    - field: 0.title
+                      label: Last Task
+                      format: text
+                    - field: 0.model.id
+                      label: Model
+                      format: text
+                    - field: 0.tokens.input
+                      label: Tokens
+                      format: number
+    - Portfolio:
+        icon: nextjs
+        href: https://dharmikshinde.tech
+        description: Personal Site
+    - Blog — dmix-writes:
+        icon: mdi-feather
+        href: http://scooby:3002
+        description: Posts & writing
+        siteMonitor: http://192.168.68.103:3002
+
+    - Mess Menu:
+        icon: mdi-food
+        href: https://meal.dharmikshinde.tech/meal
+        description: What's cooking
+        siteMonitor: https://meal.dharmikshinde.tech/meal
 
 - Quick Links:
     - GitHub:
         icon: github
-        href: https://github.com/
+        href: https://github.com/iamdmix
     - Reddit:
         icon: reddit
         href: https://reddit.com/

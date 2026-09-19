@@ -10,6 +10,7 @@ config.yml
 
 # Docker volumes / runtime data
 data/
+data/beszel-keys/
 
 # Netscape cookie files (curl)
 *.cookie
@@ -40,3 +41,6 @@ portfolio_old_*/
 *.log
 logs/
 portfolio/
+
+# Dashboard proof screenshots
+*.png
