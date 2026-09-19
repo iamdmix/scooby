@@ -42,14 +42,6 @@
               enableNowPlaying: true
 
     - Monitoring:
-        - Uptime Kuma:
-            icon: uptime-kuma
-            href: http://scooby:3001
-            description: Status Monitor
-            widget:
-              type: uptimekuma
-              url: http://uptime-kuma:3001
-
         - Portfolio:
             icon: nextjs
             href: https://dharmikshinde.tech

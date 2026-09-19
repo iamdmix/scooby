@@ -33,6 +33,9 @@ Icon
 *.swp
 *.swo
 
+# Backups (old portfolio snapshot)
+portfolio_old_*/
+
 # Logs
 *.log
 logs/

@@ -35,15 +35,7 @@ services:
       - NET_ADMIN
 
   # --- MONITORING & DASHBOARD ---
-  uptime-kuma:
-    <<: *common-keys
-    image: louislam/uptime-kuma:1
-    container_name: uptime-kuma
-    ports:
-      - "3001:3001"
-    volumes:
-      - uptimekuma_data:/app/data
-
+  # (uptime-kuma removed 2026-09-19)
   homepage:
     <<: *common-keys
     image: ghcr.io/gethomepage/homepage:latest
@@ -78,32 +70,27 @@ services:
           cpus: "2.0"
           memory: 4G
 
-  portfolio_web:
-    <<: *common-keys
-    build: ./portfolio
-    container_name: portfolio_web
-    ports:
-      - "3002:3000"
-
   # --- AUTOMATION ---
-  n8n:
+  # (n8n removed 2026-09-19)
+
+# --- LIBRARY / READING ---
+  kavita:
     <<: *common-keys
-    image: docker.n8n.io/n8nio/n8n
-    container_name: n8n
+    image: jvmilazz0/kavita:latest
+    container_name: kavita
     ports:
-      - "5678:5678"
+      - "5001:5000"
     environment:
-      - N8N_HOST=${SERVER_URL:-localhost}
-      - NODE_ENV=production
-      - N8N_SECURE_COOKIE=false
+      TZ: 'Asia/Kolkata'
     volumes:
-      - n8n_data:/home/node/.n8n
+      - ./data/kavita/config:/kavita/config
+      - ./data/kavita/manga:/manga
+      - ./data/kavita/comics:/comics
+      - ./data/kavita/books:/books
 
 volumes:
   portainer_data:
   pihole_config:
   dnsmasq_config:
-  uptimekuma_data:
   jellyfin_config:
   jellyfin_cache:
-  n8n_data:

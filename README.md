@@ -9,10 +9,8 @@ A self-hosted homeserver on OrbStack, wrapped in a Homepage dashboard and expose
 | Homepage | 3000 | Dashboard; config lives in `./config` and hot-reloads |
 | Portainer | 9443 | Docker management UI |
 | Pi-hole | 8080 / 53 | DNS + ad blocking |
-| Uptime Kuma | 3001 | Uptime monitoring |
 | Jellyfin | 8096 | Media server |
-| n8n | 5678 | Workflow automation |
-| portfolio_web | 3002 | Personal site (Next.js, built from `./portfolio`) |
+| Kavita | 5001 | Library / reading server |
 | Cloudflare Tunnel | — | External access via `config.yml` + `cloudflared` |
 
 Media is mounted read-only from `${HOME}/Media`. All state lives in Docker named volumes (`jellyfin_config`, `pihole_config`, `portainer_data`, `n8n_data`, `uptimekuma_data`, etc.).
@@ -33,9 +31,21 @@ Media is mounted read-only from `${HOME}/Media`. All state lives in Docker named
 │   ├── custom.js
 │   ├── docker.yaml        # docker socket endpoint (my-docker)
 │   └── logs/
-├── portfolio/             # Next.js portfolio (separate repo)
-└── .env.example
+└── portfolio/             # Next.js portfolio (separate repo, own docker-compose.yml — runs on 8081)
 ```
+
+## Related Projects Elsewhere
+
+These live outside `~/server` on purpose:
+
+```
+~/dmix-writes/            # personal blog (Next.js) — separate git repo; deploys itself
+                          # via ./deploy.sh to port 3002
+~/services/
+└── mess-menu/            # mess menu API (FastAPI, port 8085) — own docker-compose.yml
+```
+
+Each is self-contained: `cd` into it, `docker compose up -d`, push to deploy per its own README.
 
 ## Management
 
