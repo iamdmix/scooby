@@ -88,7 +88,7 @@
                       format: number
     - Portfolio:
         icon: nextjs
-        href: https://dharmikshinde.tech
+        href: https://dharmikshinde.in
         description: Personal Site
     - Blog — dmix-writes:
         icon: mdi-feather
@@ -98,9 +98,9 @@
 
     - Mess Menu:
         icon: mdi-food
-        href: https://meal.dharmikshinde.tech/meal
+        href: https://meal.dharmikshinde.in/meal
         description: What's cooking
-        siteMonitor: https://meal.dharmikshinde.tech/meal
+        siteMonitor: https://meal.dharmikshinde.in/meal
 
 - Quick Links:
     - GitHub:
